@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Campus Connect - Link Loopers</title>
+<style>
+
+    /* RESET */
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    /* FULL PAGE BACKGROUND IMAGE + BLUR */
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+        /* Gradient overlay + your image */
+        background:
+            linear-gradient(135deg, rgba(102, 126, 234, 0.55), rgba(118, 75, 162, 0.55)),
+            url('GEU LOGO.jpg') no-repeat center center fixed;
+
+        background-size: cover;
+        min-height: 100vh;
+        padding: 20px;
+
+        /* Soft blur */
+        backdrop-filter: blur(1px);
+        -webkit-backdrop-filter: blur(1px);
+    }
+
+    /* LOGIN CARD CLEAN WHITE LOOK */
+    .auth-container .card,
+    #authScreen .card {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 20px;
+        padding: 30px;
+        backdrop-filter: none;
+        box-shadow: 0 10px 35px rgba(0, 0, 0, 0.25);
+    }
+
+    /* MAIN CONTAINER */
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    /* HEADER CARD */
+    .header {
+        background: white;
+        padding: 20px;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .header h1 {
+        color: #667eea;
+        margin-bottom: 5px;
+    }
+
+    .header p {
+        color: #666;
+        font-size: 14px;
+    }
+
+    /* PLAIN WHITE CARDS */
+    .card {
+        background: white;
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        margin-bottom: 20px;
+    }
+
+    /* AUTH SCREENS */
+    .auth-container {
+        max-width: 450px;
+        margin: 50px auto;
+    }
+
+    /* FORM INPUTS */
+    .form-group {
+        margin-bottom: 20px;
+    }
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        color: #333;
+        font-weight: 600;
+    }
+    .form-group input, .form-group select, textarea {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 14px;
+        transition: border-color 0.3s;
+        font-family: inherit;
+    }
+    .form-group input:focus, .form-group select:focus, textarea:focus {
+        outline: none;
+        border-color: #667eea;
+    }
+
+    /* BUTTONS */
+    .btn {
+        padding: 12px 30px;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        margin-right: 10px;
+        margin-bottom: 10px;
+    }
+    .btn-primary { background: #667eea; color: white; }
+    .btn-primary:hover {
+        background: #5568d3;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
+    .btn-secondary { background: #6c757d; color: white; }
+    .btn-success { background: #28a745; color: white; }
+    .btn-danger { background: #dc3545; color: white; }
+
+    /* DASHBOARD LAYOUT */
+    .dashboard {
+        display: grid;
+        grid-template-columns: 250px 1fr;
+        gap: 20px;
+    }
+
+    .sidebar {
+        background: white;
+        padding: 20px;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        height: fit-content;
+    }
+
+    .sidebar h3 {
+        color: #667eea;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #667eea;
+    }
+
+    .menu-item {
+        padding: 12px;
+        margin-bottom: 8px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s;
+        color: #333;
+    }
+    .menu-item:hover {
+        background: #f0f0f0;
+        transform: translateX(5px);
+    }
+    .menu-item.active {
+        background: #667eea;
+        color: white;
+    }
+
+    /* MAIN CONTENT */
+    .main-content {
+        background: white;
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        min-height: 500px;
+    }
+
+    /* INFO PANEL */
+    .user-info {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 15px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        text-align: center;
+    }
+
+    /* SMALL UI ITEMS */
+    .item-card {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 10px;
+        margin-bottom: 15px;
+        border-left: 4px solid #667eea;
+    }
+
+    .badge { padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; margin-right: 8px; }
+    .badge-info { background: #17a2b8; color: white; }
+    .badge-success { background: #28a745; color: white; }
+    .badge-warning { background: #ffc107; color: #333; }
+
+    .poll-option {
+        background: white;
+        padding: 15px;
+        margin-bottom: 10px;
+        border-radius: 8px;
+        cursor: pointer;
+        border: 2px solid #e0e0e0;
+        transition: all 0.3s;
+    }
+    .poll-option:hover {
+        border-color: #667eea;
+        transform: translateX(5px);
+    }
+
+    .progress-bar {
+        height: 25px;
+        background: #e0e0e0;
+        border-radius: 15px;
+        overflow: hidden;
+        margin-top: 10px;
+    }
+    .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+        display: flex;
+        align-items: center;
+        padding: 0 10px;
+        color: white;
+        font-size: 12px;
+        font-weight: 600;
+        transition: width 0.5s;
+    }
+
+    .hidden { display: none; }
+
+    .alert { padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+    .alert-success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+    .alert-error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+
+    textarea { min-height: 100px; resize: vertical; }
+
+    .grid-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+
+    @media (max-width: 768px) {
+        .dashboard { grid-template-columns: 1fr; }
+        .grid-2 { grid-template-columns: 1fr; }
+    }
+
+    .info-box {
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 8px;
+        margin-top: 20px;
+    }
+
+</style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎓 Smart Campus Connect</h1>
+            <p>Team Link Loopers | Data Structures: Linked List, BST, Queue, Stack</p>
+        </div>
+
+        <!-- Login Screen -->
+        <div id="authScreen" class="auth-container">
+            <div class="card">
+                <h2 style="text-align: center; color: #667eea; margin-bottom: 30px;">Login</h2>
+                <div id="authAlert"></div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="loginEmail" placeholder="Enter your email" value="admin@campus.com">
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="loginPassword" placeholder="Enter your password" value="admin123">
+                </div>
+                <button class="btn btn-primary" onclick="login()">Login</button>
+                <button class="btn btn-secondary" onclick="showRegister()">Register</button>
+                <div class="info-box">
+                    
+                </div>
+            </div>
+        </div>
+
+        <!-- Register Screen -->
+        <div id="registerScreen" class="auth-container hidden">
+            <div class="card">
+                <h2 style="text-align: center; color: #667eea; margin-bottom: 30px;">Register</h2>
+                <div id="regAlert"></div>
+                <div class="form-group">
+                    <label>Name</label>
+                    <input type="text" id="regName" placeholder="Enter your name">
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="regEmail" placeholder="Enter your email">
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="regPassword" placeholder="Create a password">
+                </div>
+                <div class="form-group">
+                    <label>Role</label>
+                    <select id="regRole">
+                        <option value="student">Student</option>
+                        <option value="faculty">Faculty</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                </div>
+                <button class="btn btn-primary" onclick="register()">Register</button>
+                <button class="btn btn-secondary" onclick="showLogin()">Back to Login</button>
+            </div>
+        </div>
+
+        <!-- Dashboard Screen -->
+        <div id="dashboardScreen" class="hidden">
+            <div class="dashboard">
+                <div class="sidebar">
+                    <div class="user-info">
+                        <h3 id="userName">User</h3>
+                        <p id="userRole">Role</p>
+                        <p id="userStudentId" style="font-size: 12px; margin-top: 5px;"></p>
+                    </div>
+                    <h3>Menu</h3>
+                    <div class="menu-item active" onclick="showSection('announcements')">📢 Announcements</div>
+                    <div class="menu-item" onclick="showSection('events')">📅 Events</div>
+                    <div class="menu-item" onclick="showSection('polls')">📊 Polls</div>
+                    <div class="menu-item" onclick="showSection('students')">👥 Students</div>
+                    <div id="adminMenu" class="hidden">
+                        <div class="menu-item" onclick="showSection('addStudent')">➕ Add Student</div>
+                        <div class="menu-item" onclick="showSection('postAnnouncement')">📝 Post Announcement</div>
+                        <div class="menu-item" onclick="showSection('addEvent')">🎉 Add Event</div>
+                        <div class="menu-item" onclick="showSection('createPoll')">📋 Create Poll</div>
+                    </div>
+                    <div class="menu-item" style="background: #dc3545; color: white; margin-top: 20px;" onclick="logout()">🚪 Logout</div>
+                </div>
+
+                <div class="main-content">
+                    <div id="contentArea"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:8080/api';
+        let currentUser = null;
+
+        async function login() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+
+            if (!email || !password) {
+                showAlert('authAlert', 'Please fill all fields!', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({email, password})
+                });
+
+                const data = await response.json();
+
+                if (data.status === 'success') {
+                    currentUser = data.user;
+                    showAlert('authAlert', 'Login successful!', 'success');
+                    setTimeout(() => {
+                        document.getElementById('authScreen').classList.add('hidden');
+                        document.getElementById('dashboardScreen').classList.remove('hidden');
+                        document.getElementById('userName').textContent = currentUser.name;
+                        document.getElementById('userRole').textContent = currentUser.role.toUpperCase();
+                        
+                        if (currentUser.role === 'student' && currentUser.studentId) {
+                            document.getElementById('userStudentId').textContent = `ID: ${currentUser.studentId}`;
+                        }
+                        
+                        if (currentUser.role === 'admin' || currentUser.role === 'faculty') {
+                            document.getElementById('adminMenu').classList.remove('hidden');
+                        }
+                        
+                        showSection('announcements');
+                    }, 1000);
+                } else {
+                    showAlert('authAlert', data.message || 'Invalid credentials!', 'error');
+                }
+            } catch (error) {
+                showAlert('authAlert', 'Error: Backend not running! Start the Flask server first.', 'error');
+                console.error('Login error:', error);
+            }
+        }
+
+        async function register() {
+            const name = document.getElementById('regName').value;
+            const email = document.getElementById('regEmail').value;
+            const password = document.getElementById('regPassword').value;
+            const role = document.getElementById('regRole').value;
+
+            if (!name || !email || !password) {
+                showAlert('regAlert', 'Please fill all fields!', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/auth/register`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({name, email, password, role})
+                });
+
+                const data = await response.json();
+
+                if (data.status === 'success') {
+                    const msg = role === 'student' 
+                        ? `Registration successful! Your Student ID is: ${data.studentId}. Please login.`
+                        : 'Registration successful! Please login.';
+                    showAlert('regAlert', msg, 'success');
+                    setTimeout(showLogin, 3000);
+                } else {
+                    showAlert('regAlert', data.message || 'Registration failed!', 'error');
+                }
+            } catch (error) {
+                showAlert('regAlert', 'Error: Backend not running!', 'error');
+            }
+        }
+
+        function logout() {
+            currentUser = null;
+            document.getElementById('dashboardScreen').classList.add('hidden');
+            document.getElementById('authScreen').classList.remove('hidden');
+            document.getElementById('adminMenu').classList.add('hidden');
+            document.getElementById('loginEmail').value = '';
+            document.getElementById('loginPassword').value = '';
+        }
+
+        function showLogin() {
+            document.getElementById('registerScreen').classList.add('hidden');
+            document.getElementById('authScreen').classList.remove('hidden');
+        }
+
+        function showRegister() {
+            document.getElementById('authScreen').classList.add('hidden');
+            document.getElementById('registerScreen').classList.remove('hidden');
+        }
+
+        function showAlert(elementId, message, type) {
+            const alertDiv = document.getElementById(elementId);
+            alertDiv.innerHTML = `<div class="alert alert-${type}">${message}</div>`;
+            setTimeout(() => alertDiv.innerHTML = '', 5000);
+        }
+
+        function showSection(section) {
+            document.querySelectorAll('.menu-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            if (event && event.target) {
+                event.target.classList.add('active');
+            }
+
+            switch(section) {
+                case 'announcements':
+                    displayAnnouncements();
+                    break;
+                case 'events':
+                    displayEvents();
+                    break;
+                case 'polls':
+                    displayPolls();
+                    break;
+                case 'students':
+                    displayStudents();
+                    break;
+                case 'addStudent':
+                    showAddStudent();
+                    break;
+                case 'postAnnouncement':
+                    showPostAnnouncement();
+                    break;
+                case 'addEvent':
+                    showAddEvent();
+                    break;
+                case 'createPoll':
+                    showCreatePoll();
+                    break;
+            }
+        }
+
+        async function displayAnnouncements() {
+            try {
+                const response = await fetch(`${API_URL}/announcements`);
+                const data = await response.json();
+                
+                let html = '<h2 class="section-title">📢 Announcements (Queue - FIFO)</h2>';
+                html += '<p style="color: #666; margin-bottom: 20px;"><em>Using Python Flask Backend with Queue</em></p>';
+                
+                if (data.length === 0) {
+                    html += '<p>No announcements yet!</p>';
+                } else {
+                    data.forEach(ann => {
+                        html += `
+                            <div class="item-card">
+                                <h4>${ann.message}</h4>
+                                <p>
+                                    <span class="badge badge-info">${ann.postedBy}</span>
+                                    <span class="badge badge-success">${ann.timestamp}</span>
+                                </p>
+                            </div>
+                        `;
+                    });
+                }
+                
+                document.getElementById('contentArea').innerHTML = html;
+            } catch (error) {
+                document.getElementById('contentArea').innerHTML = '<p>Error loading data!</p>';
+            }
+        }
+
+        async function displayEvents() {
+            try {
+                const response = await fetch(`${API_URL}/events`);
+                const data = await response.json();
+                
+                let html = '<h2 class="section-title">📅 Events (Stack - LIFO)</h2>';
+                html += '<p style="color: #666; margin-bottom: 20px;"><em>Using Python Flask Backend with Stack</em></p>';
+                
+                if (data.length === 0) {
+                    html += '<p>No events scheduled!</p>';
+                } else {
+                    data.forEach(evt => {
+                        html += `
+                            <div class="item-card">
+                                <h4>🎉 ${evt.event}</h4>
+                                <p>
+                                    <span class="badge badge-warning">${evt.date}</span>
+                                    <span class="badge badge-info">${evt.time}</span>
+                                </p>
+                            </div>
+                        `;
+                    });
+                }
+                
+                document.getElementById('contentArea').innerHTML = html;
+            } catch (error) {
+                document.getElementById('contentArea').innerHTML = '<p>Error loading events!</p>';
+            }
+        }
+
+        async function displayPolls() {
+            try {
+                const response = await fetch(`${API_URL}/polls`);
+                const data = await response.json();
+                
+                let html = '<h2 class="section-title">📊 Polls (Linked List)</h2>';
+                
+                if (data.length === 0) {
+                    html += '<p>No polls available!</p>';
+                } else {
+                    data.forEach(poll => {
+                        html += `<div class="item-card">
+                            <h4>${poll.question}</h4>
+                            <p style="color: #666;">Total: ${poll.totalVotes} votes</p>`;
+                        
+                        poll.options.forEach((option, index) => {
+                            const pct = poll.totalVotes > 0 ? (poll.votes[index] / poll.totalVotes * 100).toFixed(1) : 0;
+                            html += `
+                                <div class="poll-option" onclick="votePoll(${poll.id}, ${index})">
+                                    <strong>${option}</strong>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: ${pct}%">${poll.votes[index]} (${pct}%)</div>
+                                    </div>
+                                </div>
+                            `;
+                        });
+                        
+                        html += '</div>';
+                    });
+                }
+                
+                document.getElementById('contentArea').innerHTML = html;
+            } catch (error) {
+                document.getElementById('contentArea').innerHTML = '<p>Error loading polls!</p>';
+            }
+        }
+
+        async function votePoll(pollId, optionIndex) {
+            try {
+                await fetch(`${API_URL}/polls/${pollId}/vote`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({optionIndex})
+                });
+                displayPolls();
+            } catch (error) {
+                alert('Error voting!');
+            }
+        }
+
+        async function displayStudents() {
+            try {
+                const response = await fetch(`${API_URL}/students`);
+                const data = await response.json();
+                
+                let html = '<h2 class="section-title">👥 Students (BST - Inorder)</h2>';
+                html += '<p style="color: #666; margin-bottom: 20px;"><em>Using Binary Search Tree</em></p>';
+                
+                if (data.length === 0) {
+                    html += '<p>No students yet!</p>';
+                } else {
+                    data.forEach(s => {
+                        html += `
+                            <div class="item-card">
+                                <h4>${s.name}</h4>
+                                <p>
+                                    <span class="badge badge-info">ID: ${s.id}</span>
+                                    <span class="badge badge-success">${s.department}</span>
+                                    <span class="badge badge-warning">CGPA: ${s.cgpa}</span>
+                                </p>
+                                <p style="color: #666; margin-top: 5px;">${s.email}</p>
+                            </div>
+                        `;
+                    });
+                }
+                
+                document.getElementById('contentArea').innerHTML = html;
+            } catch (error) {
+                document.getElementById('contentArea').innerHTML = '<p>Error loading students!</p>';
+            }
+        }
+
+        function showAddStudent() {
+            const html = `
+                <h2 class="section-title">➕ Add Student</h2>
+                <div id="addStudentAlert"></div>
+                <div class="form-group">
+                    <label>Student ID</label>
+                    <input type="number" id="studentId" placeholder="Enter ID">
+                </div>
+                <div class="form-group">
+                    <label>Name</label>
+                    <input type="text" id="studentName" placeholder="Enter name">
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="studentEmail" placeholder="Enter email">
+                </div>
+                <div class="form-group">
+                    <label>Department</label>
+                    <input type="text" id="studentDept" placeholder="Enter department">
+                </div>
+                <div class="form-group">
+                    <label>CGPA</label>
+                    <input type="number" step="0.01" id="studentCgpa" placeholder="Enter CGPA">
+                </div>
+                <button class="btn btn-primary" onclick="addStudent()">Add Student</button>
+            `;
+            document.getElementById('contentArea').innerHTML = html;
+        }
+
+        async function addStudent() {
+            const student = {
+                id: parseInt(document.getElementById('studentId').value),
+                name: document.getElementById('studentName').value,
+                email: document.getElementById('studentEmail').value,
+                department: document.getElementById('studentDept').value,
+                cgpa: parseFloat(document.getElementById('studentCgpa').value)
+            };
+
+            if (!student.id || !student.name || !student.email || !student.department || isNaN(student.cgpa)) {
+                showAlert('addStudentAlert', 'Fill all fields!', 'error');
+                return;
+            }
+
+            try {
+                await fetch(`${API_URL}/students`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(student)
+                });
+                showAlert('addStudentAlert', 'Student added!', 'success');
+                setTimeout(() => showSection('students'), 2000);
+            } catch (error) {
+                showAlert('addStudentAlert', 'Error!', 'error');
+            }
+        }
+
+        function showPostAnnouncement() {
+            const html = `
+                <h2 class="section-title">📝 Post Announcement</h2>
+                <div id="postAnnouncementAlert"></div>
+                <div class="form-group">
+                    <label>Message</label>
+                    <textarea id="announcementMessage" placeholder="Enter announcement"></textarea>
+                </div>
+                <button class="btn btn-primary" onclick="postAnnouncement()">Post</button>
+            `;
+            document.getElementById('contentArea').innerHTML = html;
+        }
+
+        async function postAnnouncement() {
+            const message = document.getElementById('announcementMessage').value;
+
+            if (!message) {
+                showAlert('postAnnouncementAlert', 'Enter a message!', 'error');
+                return;
+            }
+
+            try {
+                await fetch(`${API_URL}/announcements`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({message, postedBy: currentUser.name})
+                });
+                showAlert('postAnnouncementAlert', 'Posted!', 'success');
+                setTimeout(() => showSection('announcements'), 2000);
+            } catch (error) {
+                showAlert('postAnnouncementAlert', 'Error!', 'error');
+            }
+        }
+
+        function showAddEvent() {
+            const html = `
+                <h2 class="section-title">🎉 Add Event</h2>
+                <div id="addEventAlert"></div>
+                <div class="form-group">
+                    <label>Event Name</label>
+                    <input type="text" id="eventName" placeholder="Enter event">
+                </div>
+                <div class="form-group">
+                    <label>Date</label>
+                    <input type="date" id="eventDate">
+                </div>
+                <div class="form-group">
+                    <label>Time</label>
+                    <input type="time" id="eventTime">
+                </div>
+                <button class="btn btn-primary" onclick="addEvent()">Add Event</button>
+            `;
+            document.getElementById('contentArea').innerHTML = html;
+        }
+
+        async function addEvent() {
+            const event = document.getElementById('eventName').value;
+            const date = document.getElementById('eventDate').value;
+            const time = document.getElementById('eventTime').value;
+
+            if (!event || !date || !time) {
+                showAlert('addEventAlert', 'Fill all fields!', 'error');
+                return;
+            }
+
+            try {
+                await fetch(`${API_URL}/events`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({event, date, time})
+                });
+                showAlert('addEventAlert', 'Event added!', 'success');
+                setTimeout(() => showSection('events'), 2000);
+            } catch (error) {
+                showAlert('addEventAlert', 'Error!', 'error');
+            }
+        }
+
+        function showCreatePoll() {
+            const html = `
+                <h2 class="section-title">📋 Create Poll</h2>
+                <div id="createPollAlert"></div>
+                <div class="form-group">
+                    <label>Question</label>
+                    <input type="text" id="pollQuestion" placeholder="Enter question">
+                </div>
+                <div class="form-group">
+                    <label>Option 1</label>
+                    <input type="text" id="option1" placeholder="Option 1">
+                </div>
+                <div class="form-group">
+                    <label>Option 2</label>
+                    <input type="text" id="option2" placeholder="Option 2">
+                </div>
+                <div class="form-group">
+                    <label>Option 3 (optional)</label>
+                    <input type="text" id="option3" placeholder="Option 3">
+                </div>
+                <div class="form-group">
+                    <label>Option 4 (optional)</label>
+                    <input type="text" id="option4" placeholder="Option 4">
+                </div>
+                <button class="btn btn-primary" onclick="createPoll()">Create Poll</button>
+            `;
+            document.getElementById('contentArea').innerHTML = html;
+        }
+
+        async function createPoll() {
+            const question = document.getElementById('pollQuestion').value;
+            const options = [
+                document.getElementById('option1').value,
+                document.getElementById('option2').value,
+                document.getElementById('option3').value,
+                document.getElementById('option4').value
+            ].filter(opt => opt.trim() !== '');
+
+            if (!question || options.length < 2) {
+                showAlert('createPollAlert', 'Enter question and at least 2 options!', 'error');
+                return;
+            }
+
+            try {
+                await fetch(`${API_URL}/polls`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({question, options})
+                });
+                showAlert('createPollAlert', 'Poll created!', 'success');
+                setTimeout(() => showSection('polls'), 2000);
+            } catch (error) {
+                showAlert('createPollAlert', 'Error!', 'error');
+            }
+        }
+    </script>
+</body>
+</html>
