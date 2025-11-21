@@ -19,7 +19,9 @@ firebase_json = os.environ.get("FIREBASE_KEY")
 if not firebase_json:
     raise Exception("FIREBASE_KEY environment variable is missing!")
 
+# Load JSON string as Python dict
 cred = credentials.Certificate(json.loads(firebase_json))
+
 firebase_admin.initialize_app(cred)
 db = firestore.client()
 
@@ -28,9 +30,8 @@ db = firestore.client()
 app = Flask(__name__)
 CORS(app)
 
-# =======================================================
-# ROOT CHECK
-# =======================================================
+# ==================== ROOT CHECK ====================
+
 @app.route('/')
 def index():
     return jsonify({
@@ -39,9 +40,7 @@ def index():
         'status': 'running'
     })
 
-# =======================================================
-# ANNOUNCEMENTS (Firestore Collection: announcements)
-# =======================================================
+# ==================== ANNOUNCEMENTS ====================
 
 @app.route('/api/announcements', methods=['GET'])
 def get_announcements():
@@ -60,9 +59,7 @@ def add_announcement():
     return jsonify({"status": "success", "message": "Announcement added"})
 
 
-# =======================================================
-# EVENTS (Firestore Collection: events)
-# =======================================================
+# ==================== EVENTS ====================
 
 @app.route('/api/events', methods=['GET'])
 def get_events():
@@ -82,9 +79,7 @@ def add_event():
     return jsonify({"status": "success", "message": "Event added"})
 
 
-# =======================================================
-# STUDENTS (Firestore Collection: students)
-# =======================================================
+# ==================== STUDENTS ====================
 
 @app.route('/api/students', methods=['GET'])
 def get_students():
@@ -112,9 +107,7 @@ def delete_student(student_id):
     return jsonify({"status": "success", "message": "Student deleted"})
 
 
-# =======================================================
-# POLLS (Firestore Collection: polls)
-# =======================================================
+# ==================== POLLS ====================
 
 @app.route('/api/polls', methods=['GET'])
 def get_polls():
@@ -147,15 +140,13 @@ def vote_poll(poll_id):
     return jsonify({"status": "success", "message": "Vote recorded"})
 
 
-# =======================================================
-# AUTH (Firestore Collection: users)
-# =======================================================
+# ==================== AUTH ====================
 
 @app.route('/api/auth/register', methods=['POST'])
 def register():
     data = request.json
 
-    # Check if email exists
+    # Check if email already exists
     existing = db.collection("users").where("email", "==", data["email"]).get()
     if existing:
         return jsonify({"status": "error", "message": "Email already exists"}), 400
@@ -178,10 +169,8 @@ def login():
     return jsonify({"status": "success", "user": user})
 
 
-# =======================================================
-# RUN SERVER (Render Compatible)
-# =======================================================
+# ==================== RUN SERVER ====================
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8080))
-    app.run(host='0.0.0.0', port=port)
+    app.run(host="0.0.0.0", port=port)
