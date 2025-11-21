@@ -9,23 +9,17 @@ from flask_cors import CORS
 from datetime import datetime
 import firebase_admin
 from firebase_admin import credentials, firestore
-
-# ==================== FIREBASE SETUP ====================
-
 import json
 import os
-import firebase_admin
-from firebase_admin import credentials, firestore
+
+# ==================== FIREBASE SETUP (Render Safe) ====================
 
 firebase_json = os.environ.get("FIREBASE_KEY")
 
 if not firebase_json:
-    raise Exception("FIREBASE_KEY environment variable is missing")
+    raise Exception("FIREBASE_KEY environment variable is missing!")
 
 cred = credentials.Certificate(json.loads(firebase_json))
-firebase_admin.initialize_app(cred)
-db = firestore.client()
-   # your file name
 firebase_admin.initialize_app(cred)
 db = firestore.client()
 
@@ -65,6 +59,7 @@ def add_announcement():
     })
     return jsonify({"status": "success", "message": "Announcement added"})
 
+
 # =======================================================
 # EVENTS (Firestore Collection: events)
 # =======================================================
@@ -85,6 +80,7 @@ def add_event():
         "created": datetime.now().timestamp()
     })
     return jsonify({"status": "success", "message": "Event added"})
+
 
 # =======================================================
 # STUDENTS (Firestore Collection: students)
@@ -115,6 +111,7 @@ def delete_student(student_id):
     db.collection("students").document(str(student_id)).delete()
     return jsonify({"status": "success", "message": "Student deleted"})
 
+
 # =======================================================
 # POLLS (Firestore Collection: polls)
 # =======================================================
@@ -142,12 +139,13 @@ def vote_poll(poll_id):
     doc_ref = db.collection("polls").document(poll_id)
     poll = doc_ref.get().to_dict()
 
-    index = data.get("optionIndex")
-    poll["votes"][index] += 1
+    idx = data.get("optionIndex")
+    poll["votes"][idx] += 1
     poll["totalVotes"] += 1
 
     doc_ref.update(poll)
     return jsonify({"status": "success", "message": "Vote recorded"})
+
 
 # =======================================================
 # AUTH (Firestore Collection: users)
@@ -179,22 +177,11 @@ def login():
     user = users_ref[0].to_dict()
     return jsonify({"status": "success", "user": user})
 
+
 # =======================================================
-# RUN SERVER
+# RUN SERVER (Render Compatible)
 # =======================================================
 
 if __name__ == '__main__':
-    print("="*50)
-    print(" Smart Campus Connect (Firestore Enabled Backend)")
-    print(" Team: Link Loopers")
-    print("="*50)
-    print("Server running on http://localhost:8080")
-    print()
-
-    import os
-
-if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 8080))
+    port = int(os.environ.get("PORT", 8080))
     app.run(host='0.0.0.0', port=port)
-
-
