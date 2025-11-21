@@ -12,7 +12,20 @@ from firebase_admin import credentials, firestore
 
 # ==================== FIREBASE SETUP ====================
 
-cred = credentials.Certificate("firebase_key.json")   # your file name
+import json
+import os
+import firebase_admin
+from firebase_admin import credentials, firestore
+
+firebase_json = os.environ.get("FIREBASE_KEY")
+
+if not firebase_json:
+    raise Exception("FIREBASE_KEY environment variable is missing")
+
+cred = credentials.Certificate(json.loads(firebase_json))
+firebase_admin.initialize_app(cred)
+db = firestore.client()
+   # your file name
 firebase_admin.initialize_app(cred)
 db = firestore.client()
 
@@ -178,4 +191,10 @@ if __name__ == '__main__':
     print("Server running on http://localhost:8080")
     print()
 
-    app.run(host='0.0.0.0', port=8080, debug=True)
+    import os
+
+if __name__ == '__main__':
+    port = int(os.environ.get('PORT', 8080))
+    app.run(host='0.0.0.0', port=port)
+
+
